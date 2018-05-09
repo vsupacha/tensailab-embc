@@ -13,6 +13,19 @@
 7. เลือก ST-Link Debugger
 8. ลบส่วนโค้ดที่เกี่ยวข้องกับเซ็นเซอร์ต่างๆ
 
+### ฮาร์ดแวร์สำเร็จรูปบนบอร์ด
+#### ไฟล์ Drivers\B-L072Z-LRWAN1\**b-l072z-lrwan1.c**
+1. LED ควบคุมด้วยฟังก์ชัน `BSP_LED_On()` `BSP_LED_Off()` และ `BSP_LED_Toggle()` โดยใช้ตัวเลือก
+  - `LED1` หรือ `LED_GREEN`
+  - `LED2` หรือ `LED_RED1`
+  - `LED3` หรือ `LED_BLUE`
+  - `LED4` หรือ `LED_RED2`
+2. ปุ่มกด อ่านค่าด้วยฟังก์ชัน `BSP_PB_GetState()` โดยใช้ตัวเลือก `BUTTON_KEY` หรือ `BUTTON_USER`
+
+#### ไฟล์ Drivers\MLM32L07X01\mlm32l0xx_hw.c
+1. สถานะแบตเตอรี อ่านค่าด้วยฟังก์ชัน `HW_GetBatteryLevel()` โดยคืนค่าระหว่าง 1 (ต่ำมาก) หรือ 254 (ชาร์จเต็ม)
+2. เซ็นเซอร์อุณหภูมิในตัวชิพ อ่านค่าด้วยฟังก์ชัน `HW_GetTemperatureLevel()` โดยคืนค่าเป็นอุณหภูมิเซลเซียสแบบจำนวนเต็ม 
+
 ### การปรับแก้โค้ด
 #### การทดสอบกับเครือข่าย CAT Telecom ที่ ICIC ตรงอาคาร NIA (923MHz, ABP)
 1. ตั้ง processor symbols เป็น REGION_AS923 
@@ -54,13 +67,13 @@ void BSP_sensor_Read( sensor_t *sensor_data)
   /*read code here*/
 }
 ```
-4. แก้ไขการเพิ่มข้อมูลลงในบัฟเฟอร์ของฟังก์ชัน Send() ในไฟล์ src/**main.c**
+4. แก้ไขการเพิ่มข้อมูลลงในบัฟเฟอร์ของฟังก์ชัน `Send()` ในไฟล์ src/**main.c**
 ```
   AppData.Buff[i++] = /*data here*/;
 ```
 
 #### การเขียนโค้ดสำหรับรับข้อมูล
-1. เพิ่ม case สำหรับ app port ในฟังก์ชัน LORA_RxData() ในไฟล์ src/**main.c**
+1. เพิ่ม case สำหรับ app port ในฟังก์ชัน `LORA_RxData()` ในไฟล์ src/**main.c**
 ```
 static void LORA_RxData( lora_AppData_t *AppData )
 {
@@ -72,8 +85,8 @@ static void LORA_RxData( lora_AppData_t *AppData )
   }
 }
 ```
-2. ตรวจสอบขนาดข้อมูลจาก AppData->BuffSize
-3. ดึงข้อมูลจาก AppData->Buff[/*index here*/] 
+2. ตรวจสอบขนาดข้อมูลจาก `AppData->BuffSize`
+3. ดึงข้อมูลจาก `AppData->Buff[/*index here*/]` 
 
 ## อ้างอิง
 - [LoRaWAN software expansion for STM32Cube (UM2073)](http://www.st.com/en/embedded-software/i-cube-lrwan.html)
