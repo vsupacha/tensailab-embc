@@ -3,7 +3,7 @@
 
 ## ข้อมูลเกี่ยวกับโค้ด
 
-### ขั้นตอนการเตรียมโค้ด
+### ขั้นตอนการเตรียมโครงการ
 1. สร้างโครงการ Keil uVision ใหม่ โดยเลือก MCU เป็น STM32L072CZYx
 2. ดาวน์โหลดและขยายไฟล์ I-CUBE-LRWAN รุ่น 1.1.5
 3. สำเนาไฟล์โค้ดจาก End node และไดรเวอร์ต่างๆ
@@ -14,7 +14,7 @@
 8. ลบส่วนโค้ดที่เกี่ยวข้องกับเซ็นเซอร์ต่างๆ
 
 ### การปรับแก้โค้ด
-### การทดสอบกับเครือข่าย CAT Telecom ที่ ICIC ตรงอาคาร NIA (923MHz, ABP)
+#### การทดสอบกับเครือข่าย CAT Telecom ที่ ICIC ตรงอาคาร NIA (923MHz, ABP)
 1. ตั้ง processor symbols เป็น REGION_AS923 
 2. ขอ account จากทีมงาน CAT Telecom แล้วลงทะเบียน device กับ network server ทดสอบ
 3. ติดตั้งทีมงาน CAT Telecom เพื่อขอข้อมูลรหัส LORAWAN_NWKSKEY และ LORAWAN_APPSKEY
@@ -26,13 +26,13 @@
 #define LORAWAN_APPSKEY                             { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
 ```
 
-### การปรับแก้อัตราในการส่งข้อมูล (class A)
+#### การปรับแก้อัตราในการส่งข้อมูล (class A)
 1. แก้ไขตัวเลขในไฟล์ src/**main.c** โดยตัวเลขจะอยู่ในหน่วยมิลลิวินาที
 `
 #define APP_TX_DUTYCYCLE                            10000
 `
 
-### การเขียนโค้ดสำหรับเซ็นเซอร์เฉพาะทาง
+#### การเขียนโค้ดสำหรับเซ็นเซอร์เฉพาะทาง
 1. แก้ไขนิยามของข้อมูลในไฟล์ inc/**bsp.h**
 ```
 typedef struct{
@@ -59,7 +59,7 @@ void BSP_sensor_Read( sensor_t *sensor_data)
   AppData.Buff[i++] = /*data here*/;
 ```
 
-### การเขียนโค้ดสำหรับรับข้อมูล
+#### การเขียนโค้ดสำหรับรับข้อมูล
 1. เพิ่ม case สำหรับ app port ในฟังก์ชัน LORA_RxData() ในไฟล์ src/**main.c**
 ```
 static void LORA_RxData( lora_AppData_t *AppData )
