@@ -1,0 +1,71 @@
+{
+    "config": {
+        "lora-radio": {
+            "help": "Which radio to use (options: SX1272,SX1276)",
+            "value": "SX1276"
+        },
+        "main_stack_size":     { "value": 4096 },
+
+        "lorawan-enabled":     { "value": false},
+
+        "lora-spi-mosi":       { "value": "NC" },
+        "lora-spi-miso":       { "value": "NC" },
+        "lora-spi-sclk":       { "value": "NC" },
+        "lora-cs":             { "value": "NC" },
+        "lora-reset":          { "value": "NC" },
+        "lora-dio0":           { "value": "NC" },
+        "lora-dio1":           { "value": "NC" },
+        "lora-dio2":           { "value": "NC" },
+        "lora-dio3":           { "value": "NC" },
+        "lora-dio4":           { "value": "NC" },
+        "lora-dio5":           { "value": "NC" },
+        "lora-rf-switch-ctl1": { "value": "NC" },
+        "lora-rf-switch-ctl2": { "value": "NC" },
+        "lora-txctl":          { "value": "NC" },
+        "lora-rxctl":          { "value": "NC" },
+        "lora-ant-switch":     { "value": "NC" },
+        "lora-pwr-amp-ctl":    { "value": "NC" },
+        "lora-tcxo":           { "value": "NC" }
+    },
+    "target_overrides": {
+        "*": {
+            "platform.stdio-convert-newlines": true,
+            "platform.stdio-baud-rate": 115200,
+            "platform.default-serial-baud-rate": 115200,
+            "lora.over-the-air-activation": false,
+            "lora.duty-cycle-on": true,
+            "lora.phy": 1,
+            "lora.device-eui": "{ 0xB8, 0x02, 0xDA, 0x9A, 0x87, 0xEC, 0x98, 0x8C }",
+            "lora.application-eui": "{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }",
+            "lora.application-key": "{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }",
+            "lora.appskey": "{ 0x16, 0x28, 0xAE, 0x2B, 0x7E, 0x15, 0xD2, 0xA6, 0xAB, 0xF7, 0xCF, 0x4F, 0x3C, 0x15, 0x88, 0x09 }",
+            "lora.nwkskey": "{ 0x28, 0xAE, 0xD2, 0x2B, 0x7E, 0x15, 0x16, 0xA6, 0x09, 0xCF, 0xAB, 0xF7, 0x15, 0x88, 0x4F, 0x3C }",
+            "lora.device-address": "0xE77FE552" 
+        },
+        "DISCO_L072CZ_LRWAN1": {
+            "main_stack_size":      3072,
+            "lorawan-enabled":      true,
+
+            "lora-radio":          "SX1276",
+            "lora-spi-mosi":       "PA_7",
+            "lora-spi-miso":       "PA_6",
+            "lora-spi-sclk":       "PB_3",
+            "lora-cs":             "PA_15",
+            "lora-reset":          "PC_0",
+            "lora-dio0":           "PB_4",
+            "lora-dio1":           "PB_1",
+            "lora-dio2":           "PB_0",
+            "lora-dio3":           "PC_13",
+            "lora-dio4":           "NC",
+            "lora-dio5":           "NC",
+            "lora-rf-switch-ctl1": "NC",
+            "lora-rf-switch-ctl2": "NC",
+            "lora-txctl":          "PC_2",
+            "lora-rxctl":          "PA_1",
+            "lora-ant-switch":     "NC",
+            "lora-pwr-amp-ctl":    "PC_1",
+            "lora-tcxo":           "PA_12"
+        }
+    },
+    "macros": ["MBEDTLS_USER_CONFIG_FILE=\"mbedtls_lora_config.h\""]    
+}

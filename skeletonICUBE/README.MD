@@ -41,9 +41,9 @@
 
 #### การปรับแก้อัตราในการส่งข้อมูล (class A)
 1. แก้ไขตัวเลขในไฟล์ src/**main.c** โดยตัวเลขจะอยู่ในหน่วยมิลลิวินาที
-`
+```
 #define APP_TX_DUTYCYCLE                            10000
-`
+```
 
 #### การเขียนโค้ดสำหรับเซ็นเซอร์เฉพาะทาง
 1. แก้ไขนิยามของข้อมูลในไฟล์ inc/**bsp.h**
@@ -90,3 +90,4 @@ static void LORA_RxData( lora_AppData_t *AppData )
 
 ## อ้างอิง
 - [LoRaWAN software expansion for STM32Cube (UM2073)](http://www.st.com/en/embedded-software/i-cube-lrwan.html)
+- [เอกสารเกี่ยวกับซอฟต์แวร์สำหรับ STM32L0](http://www.st.com/en/embedded-software/stm32cubel0.html)
