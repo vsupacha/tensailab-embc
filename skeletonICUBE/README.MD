@@ -8,7 +8,7 @@
 2. ดาวน์โหลดและขยายไฟล์ I-CUBE-LRWAN รุ่น 1.1.5
 3. สำเนาไฟล์โค้ดจาก End node และไดรเวอร์ต่างๆ
 4. เพิ่มไฟล์ที่จำเป็นเข้าสู่โครงการ
-5. เพิ่มส่วน Processor Symbols > Defines เป็น STM32L072xx,USE_B_L072Z_LRWAN1,USE_HAL_DRIVER, REGION_AS923
+5. เพิ่มส่วน Processor Symbols > Defines เป็น STM32L072xx,USE_B_L072Z_LRWAN1,USE_HAL_DRIVER, REGION_AS923, DEBUG, LOW_POWER_DISABLE
 6. เพิ่มรายการไดเร็กทอรีของไฟล์ .h ต่างๆ
 7. เลือก ST-Link Debugger
 8. ลบส่วนโค้ดที่เกี่ยวข้องกับเซ็นเซอร์ต่างๆ
@@ -29,14 +29,27 @@
 ### การปรับแก้โค้ด
 #### การทดสอบกับเครือข่าย CAT Telecom ที่ ICIC ตรงอาคาร NIA (923MHz, ABP)
 1. ตั้ง processor symbols เป็น REGION_AS923 
-2. ขอ account จากทีมงาน CAT Telecom แล้วลงทะเบียน device กับ network server ทดสอบ
-3. ติดตั้งทีมงาน CAT Telecom เพื่อขอข้อมูลรหัส LORAWAN_NWKSKEY และ LORAWAN_APPSKEY
-4. แก้ไขค่าตั้งของเครือข่ายในไฟล์ inc/**commissioning.h**
+2. ขอ account จากทีมงาน CAT Telecom แล้วลงทะเบียน device กับ [network server ทดสอบ](https://loraiot.cattelecom.com/portal/login)
+3. ในกรณี ABP แก้ไขค่าตั้งของเครือข่ายในไฟล์ inc/**commissioning.h** โดยค่าของ DevAddr, NwkSKey, AppSKey ให้ตั้งค่าจาก web UI ของ CAT Telecom
 ```
 #define OVER_THE_AIR_ACTIVATION                     0
-#define LORAWAN_DEVICE_ADDRESS                      ( uint32_t )0x00000000
-#define LORAWAN_NWKSKEY                             { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define LORAWAN_APPSKEY                             { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define STATIC_DEVICE_ADDRESS                       1
+#define LORAWAN_DEVICE_ADDRESS                      ( uint32_t )0x89EF1155
+#define LORAWAN_NWKSKEY                             { 0x28, 0xAE, 0xD2, 0x2B, 0x7E, 0x15, 0x16, 0xA6, 0x09, 0xCF, 0xAB, 0xF7, 0x15, 0x88, 0x4F, 0x3C }
+#define LORAWAN_APPSKEY                             { 0x17, 0x28, 0xAE, 0x2B, 0x7E, 0x15, 0xD2, 0xA6, 0xAB, 0xF7, 0xCF, 0x4F, 0x3C, 0x15, 0x88, 0x09 }
+```
+4. ในกรณี OTAA แก้ไขค่าตั้งของเครือข่ายในไฟล์ inc/**commissioning.h** โดยค่าของ DevEUI, AppEUI ให้ตั้งค่าจาก web UI ของ CAT Telecom
+```
+#define OVER_THE_AIR_ACTIVATION                     1
+#define LORAWAN_PUBLIC_NETWORK                      true
+#define STATIC_DEVICE_EUI                           1
+#define LORAWAN_DEVICE_EUI                          { 0xAA, 0x00, 0xDB, 0xCA, 0x89, 0xEF, 0x11, 0x55 }
+#define LORAWAN_APPLICATION_EUI                     { 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01 }
+#define LORAWAN_APPLICATION_KEY                     { 0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6, 0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C }
+```
+5. ข้อมูลจาก network server จะส่งต่อไปที่ app server ที่กำหนดใน routing profile ซึ่งในกรณี REST จะเป็นการ POST ด้วย JSON ตามตัวอย่างที่ได้จาก log นี้
+```
+2018-05-25T04:56:40.320883+00:00 app[web.1]: {'DevEUI_uplink': {'Time': '2018-05-25T11:56:39.081+07:00', 'DevEUI': 'AA00DBCA89EF1155', 'DevAddr': '89EF1155', 'FPort': '2', 'FCntUp': '4', 'ADRbit': '1', 'MType': '2', 'FCntDn': '4', 'payload_hex': 'fe000020ff', 'mic_hex': '2153b4cf', 'Lrcid': '00000231', 'LrrRSSI': '-102.000000', 'LrrSNR': '-3.000000', 'SpFact': '9', 'SubBand': 'G1', 'Channel': 'LC4', 'DevLrrCnt': '1', 'Lrrid': '00002E82', 'Late': '0', 'LrrLAT': '13.765070', 'LrrLON': '100.528679', 'Lrrs': {'Lrr': [{'Lrrid': '00002E82', 'Chain': '0', 'LrrRSSI': '-102.000000', 'LrrSNR': '-3.000000', 'LrrESP': '-106.764351'}]}, 'CustomerID': '1100000195', 'CustomerData': {'alr': {'pro': 'LORA/Generic', 'ver': '1'}}, 'ModelCfg': '0', 'InstantPER': '0.000000', 'MeanPER': '0.000000'}}
 ```
 
 #### การปรับแก้อัตราในการส่งข้อมูล (class A)
