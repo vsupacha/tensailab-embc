@@ -16,10 +16,10 @@
 ### ฮาร์ดแวร์สำเร็จรูปบนบอร์ด
 #### ไฟล์ Drivers\B-L072Z-LRWAN1\**b-l072z-lrwan1.c**
 1. LED ควบคุมด้วยฟังก์ชัน `BSP_LED_On()` `BSP_LED_Off()` และ `BSP_LED_Toggle()` โดยใช้ตัวเลือก
-  - `LED1` หรือ `LED_GREEN`
-  - `LED2` หรือ `LED_RED1`
-  - `LED3` หรือ `LED_BLUE`
-  - `LED4` หรือ `LED_RED2`
+   - `LED1` หรือ `LED_GREEN`
+   - `LED2` หรือ `LED_RED1`
+   - `LED3` หรือ `LED_BLUE`
+   - `LED4` หรือ `LED_RED2`
 2. ปุ่มกด อ่านค่าด้วยฟังก์ชัน `BSP_PB_GetState()` โดยใช้ตัวเลือก `BUTTON_KEY` หรือ `BUTTON_USER`
 
 #### ไฟล์ Drivers\MLM32L07X01\mlm32l0xx_hw.c

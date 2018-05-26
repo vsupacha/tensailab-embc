@@ -64,7 +64,7 @@ void BSP_sensor_Read( sensor_t *sensor_data)
 {
   /* USER CODE BEGIN 5 */
 
-    /* USER CODE END 5 */
+  /* USER CODE END 5 */
 }
 
 void  BSP_sensor_Init( void  )

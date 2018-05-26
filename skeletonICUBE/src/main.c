@@ -265,7 +265,7 @@ static void LORA_RxData( lora_AppData_t *AppData )
     /*this port switches the class*/
     if( AppData->BuffSize == 1 )
     {
-      switch (  AppData->Buff[0] )
+      switch ( AppData->Buff[0] )
       {
         case 0:
         {
