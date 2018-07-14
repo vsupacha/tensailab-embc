@@ -54,7 +54,6 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "radio.h"
 #include "sx1276.h"
 #include "mlm32l07x01.h"
-#include "delay.h"
 
 
 #define IRQ_HIGH_PRIORITY  0

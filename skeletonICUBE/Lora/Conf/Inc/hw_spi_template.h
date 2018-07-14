@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    hw_spi.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   Header for driver hw_spi.c module
   ******************************************************************************
   * @attention
@@ -57,7 +57,6 @@ Maintainer: Miguel Luis and Gregory Cristian
   *
   ******************************************************************************
   */
-  
 #if 0
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __HW_SPI_H__

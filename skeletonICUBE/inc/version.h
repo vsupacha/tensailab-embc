@@ -15,8 +15,8 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 /******************************************************************************
   * @file    version.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   defines the lora mac version
   ******************************************************************************
   * @attention
@@ -63,20 +63,20 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 #define __VERSION_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-   
+
 /* Includes ------------------------------------------------------------------*/
 #include "lora_mac_version.h"
 /* Exported constants --------------------------------------------------------*/
 #define TEST_VERSION (uint32_t) 0x00000000  /*1 lsb is always 0 in releases   */
-#define LRWAN_VERSION  (uint32_t) 0x00001150  /*3 next hex is i_cube release*/
+#define LRWAN_VERSION  (uint32_t) 0x00001200  /*3 next hex is i_cube release*/
 #define VERSION   (uint32_t) ( LORA_MAC_VERSION | LRWAN_VERSION | TEST_VERSION )
    
 /* Exported types ------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/
 /* Exported macros -----------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */ 
+/* Exported functions ------------------------------------------------------- */
 
 #ifdef __cplusplus
 }

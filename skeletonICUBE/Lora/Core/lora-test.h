@@ -1,8 +1,8 @@
 /******************************************************************************
   * @file    lora_test.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   lora API to drive the lora state Machine
   ******************************************************************************
   * @attention

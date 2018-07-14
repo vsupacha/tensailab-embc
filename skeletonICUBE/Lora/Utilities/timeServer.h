@@ -15,8 +15,6 @@ Maintainer: Miguel Luis and Gregory Cristian
 /******************************************************************************
   * @file    timeServer.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
   * @brief   is the timer server driver
   ******************************************************************************
   * @attention
@@ -68,7 +66,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdbool.h>
-#include "utilities.h"
+#include "utilities.h" 
+
 
 /* Exported types ------------------------------------------------------------*/
 
@@ -139,7 +138,6 @@ void TimerReset( TimerEvent_t *obj );
  */
 void TimerSetValue( TimerEvent_t *obj, uint32_t value );
 
-
 /*!
  * \brief Read the current time
  *
@@ -154,6 +152,17 @@ TimerTime_t TimerGetCurrentTime( void );
  * \retval time             returns elapsed time in ms
  */
 TimerTime_t TimerGetElapsedTime( TimerTime_t savedTime );
+
+/*!
+ * \brief Computes the temperature compensation for a period of time on a
+ *        specific temperature.
+ *
+ * \param [IN] period Time period to compensate
+ * \param [IN] temperature Current temperature
+ *
+ * \retval Compensated time period
+ */
+TimerTime_t TimerTempCompensation( TimerTime_t period, float temperature );
 
 #ifdef __cplusplus
 }

@@ -16,8 +16,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    hw_msp.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   Header for driver hw msp module
   ******************************************************************************
   * @attention
@@ -165,6 +165,12 @@ void HW_ExitStopMode( void);
   */
 void HW_EnterSleepMode( void);
 
+typedef enum
+  {
+    e_LOW_POWER_RTC = (1<<0),
+    e_LOW_POWER_GPS = (1<<1),
+    e_LOW_POWER_UART = (1<<2), /* can be used to forbid stop mode in case of uart Xfer*/
+  } e_LOW_POWER_State_Id_t;
 
 /* ADC */
 

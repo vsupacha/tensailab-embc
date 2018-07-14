@@ -2,8 +2,8 @@
  /******************************************************************************
   * @file    mlm32l0xx_hal_msp.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   msp file for HAL
   ******************************************************************************
   * @attention
@@ -47,7 +47,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "hw.h"
-#include "delay.h"
 #include "timeServer.h"
 /* when fast wake up is enabled, the mcu wakes up in ~20us  * and 
  * does not wait for the VREFINT to be settled. THis is ok for 
@@ -81,7 +80,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   */
 void HAL_Delay(__IO uint32_t Delay)
 {
-  DelayMs( Delay ); /* based on RTC */
+  HW_RTC_DelayMs( Delay ); /* based on RTC */
 }
 
 /**

@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    hw.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   contains all hardware driver
   ******************************************************************************
   * @attention
@@ -63,7 +63,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #define __HW_H__
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 /* Includes ------------------------------------------------------------------*/
 #include <math.h>
@@ -74,14 +74,15 @@ Maintainer: Miguel Luis and Gregory Cristian
 #include "hw_spi.h"
 #include "hw_rtc.h"
 #include "hw_msp.h"
+#include "util_console.h"
 #include "debug.h"
+
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* __HW_H__ */
-
 #endif
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

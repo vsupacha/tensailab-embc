@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    utilities_conf.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   configuration for utilities
   ******************************************************************************
   * @attention
@@ -52,7 +52,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include "vcom.h"
 /*low power manager configuration*/
 typedef enum
 {
@@ -63,6 +63,21 @@ typedef enum
   LPM_UART_RX_Id =  (1 << 4),
   LPM_UART_TX_Id =  (1 << 5),
 } LPM_Id_t;
+
+#define OutputInit  vcom_Init
+#define OutputTrace vcom_Trace
+
+#define VERBOSE_LEVEL_0 0
+#define VERBOSE_LEVEL_1 1
+#define VERBOSE_LEVEL_2 2
+
+#define VERBOSE_LEVEL 0
+
+#if ( VERBOSE_LEVEL < VERBOSE_LEVEL_2)
+#define DBG_TRACE_MSG_QUEUE_SIZE 256
+#else
+#define DBG_TRACE_MSG_QUEUE_SIZE 512
+#endif
 
   /* Exported types ------------------------------------------------------------*/
   /* Exported constants --------------------------------------------------------*/

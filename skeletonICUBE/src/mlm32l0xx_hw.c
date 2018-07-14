@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /*******************************************************************************
   * @file    mlm32l0xx_hw.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   system hardware driver
   ******************************************************************************
   * @attention
@@ -136,7 +136,7 @@ void HW_Init( void )
 
     HW_RTC_Init( );
     
-    vcom_Init( );
+    TraceInit( );
     
     BSP_sensor_Init( );
     
@@ -398,9 +398,7 @@ void HW_AdcInit( void )
   if( AdcInitialized == false )
   {
     AdcInitialized = true;
-#if 0
-    GPIO_InitTypeDef initStruct;
-#endif
+
     
     hadc.Instance  = ADC1;
     
@@ -425,13 +423,7 @@ void HW_AdcInit( void )
     
 
     HAL_ADC_Init( &hadc );
-#if 0
-    initStruct.Mode =GPIO_MODE_ANALOG;
-    initStruct.Pull = GPIO_NOPULL;
-    initStruct.Speed = GPIO_SPEED_HIGH;
 
-    HW_GPIO_Init( BAT_LEVEL_PORT, BAT_LEVEL_PIN, &initStruct );
-#endif
   }
 }
 /**

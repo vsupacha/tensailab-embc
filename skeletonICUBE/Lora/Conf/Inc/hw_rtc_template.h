@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    hw_rtc.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   Header for driver hw_rtc.c module
   ******************************************************************************
   * @attention
@@ -75,6 +75,25 @@ Maintainer: Miguel Luis and Gregory Cristian
 /* Exported macros -----------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */ 
 
+/*!
+ * \brief Temperature coefficient of the clock source
+ */
+#define RTC_TEMP_COEFFICIENT                            ( -0.035 )
+
+/*!
+ * \brief Temperature coefficient deviation of the clock source
+ */
+#define RTC_TEMP_DEV_COEFFICIENT                        ( 0.0035 )
+
+/*!
+ * \brief Turnover temperature of the clock source
+ */
+#define RTC_TEMP_TURNOVER                               ( 25.0 )
+
+/*!
+ * \brief Turnover temperature deviation of the clock source
+ */
+#define RTC_TEMP_DEV_TURNOVER                           ( 5.0 )
 /*!
  * @brief Initializes the RTC timer
  * @note The timer is based on the RTC
@@ -162,7 +181,7 @@ int16_t HW_RTC_getMcuWakeUpTime( void );
  * @param [IN] time in milliseconds
  * @retval returns time in timer ticks
  */
-uint32_t HW_RTC_ms2Tick( TimerTime_t timeMicroSec );
+uint32_t HW_RTC_ms2Tick( TimerTime_t timeMilliSec );
 
 /*!
  * @brief converts time in ticks to time in ms
@@ -170,6 +189,42 @@ uint32_t HW_RTC_ms2Tick( TimerTime_t timeMicroSec );
  * @retval returns time in timer milliseconds
  */
 TimerTime_t HW_RTC_Tick2ms( uint32_t tick );
+
+/*!
+ * \brief Computes the temperature compensation for a period of time on a
+ *        specific temperature.
+ *
+ * \param [IN] period Time period to compensate
+ * \param [IN] temperature Current temperature
+ *
+ * \retval Compensated time period
+ */
+TimerTime_t RtcTempCompensation( TimerTime_t period, float temperature );
+
+/*!
+ * \brief Get system time
+ * \param [IN]   subSeconds in ms
+ *               
+ * \uint32_t     seconds 
+ */
+uint32_t HW_RTC_GetCalendarTime( uint16_t *subSeconds );
+
+/*!
+ * \brief Read from backup registers
+ * \param [IN]  Data 0
+ * \param [IN]  Data 1
+ *               
+ */
+void HW_RTC_BKUPRead( uint32_t *Data0, uint32_t *Data1);
+
+/*!
+ * \brief Write in backup registers
+ * \param [IN]  Data 0
+ * \param [IN]  Data 1
+ *               
+ */
+
+void HW_RTC_BKUPWrite( uint32_t Data0, uint32_t Data1);
 
 #ifdef __cplusplus
 }

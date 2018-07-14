@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /*******************************************************************************
   * @file    hw_spi.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   manages the SPI interface
   ******************************************************************************
   * @attention
@@ -141,7 +141,7 @@ void HW_SPI_IoInit( void )
   
 
   initStruct.Mode =GPIO_MODE_AF_PP;
-  initStruct.Pull = GPIO_PULLDOWN;
+  initStruct.Pull =GPIO_NOPULL  ;
   initStruct.Speed = GPIO_SPEED_HIGH;
   initStruct.Alternate= SPI1_AF ;
 
@@ -150,7 +150,7 @@ void HW_SPI_IoInit( void )
   HW_GPIO_Init( RADIO_MOSI_PORT, RADIO_MOSI_PIN, &initStruct);
 
   initStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  initStruct.Pull = GPIO_PULLUP;
+  initStruct.Pull = GPIO_NOPULL;
 
   HW_GPIO_Init(  RADIO_NSS_PORT, RADIO_NSS_PIN, &initStruct );
 
@@ -163,7 +163,7 @@ void HW_SPI_IoDeInit( void )
     
   initStruct.Mode =GPIO_MODE_OUTPUT_PP;
 
-  initStruct.Pull =GPIO_PULLDOWN  ;
+  initStruct.Pull =GPIO_NOPULL  ; 
   HW_GPIO_Init ( RADIO_MOSI_PORT, RADIO_MOSI_PIN, &initStruct ); 
   HW_GPIO_Write( RADIO_MOSI_PORT, RADIO_MOSI_PIN, 0 );
   
@@ -171,11 +171,11 @@ void HW_SPI_IoDeInit( void )
   HW_GPIO_Init ( RADIO_MISO_PORT, RADIO_MISO_PIN, &initStruct ); 
   HW_GPIO_Write( RADIO_MISO_PORT, RADIO_MISO_PIN, 0 );
   
-  initStruct.Pull =GPIO_PULLDOWN  ; 
+  initStruct.Pull =GPIO_NOPULL  ; 
   HW_GPIO_Init ( RADIO_SCLK_PORT, RADIO_SCLK_PIN, &initStruct ); 
   HW_GPIO_Write(  RADIO_SCLK_PORT, RADIO_SCLK_PIN, 0 );
 
-  initStruct.Pull = GPIO_PULLUP;
+  initStruct.Pull =GPIO_NOPULL  ; 
   HW_GPIO_Init ( RADIO_NSS_PORT, RADIO_NSS_PIN , &initStruct ); 
   HW_GPIO_Write( RADIO_NSS_PORT, RADIO_NSS_PIN , 1 );
 }

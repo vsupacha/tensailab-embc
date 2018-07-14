@@ -491,11 +491,6 @@
               <FilePath>.\Lora\Mac\region\RegionCommon.c</FilePath>
             </File>
             <File>
-              <FileName>delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Lora\Utilities\delay.c</FilePath>
-            </File>
-            <File>
               <FileName>low_power_manager.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Lora\Utilities\low_power_manager.c</FilePath>
@@ -514,6 +509,61 @@
               <FileName>lora-test.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Lora\Core\lora-test.c</FilePath>
+            </File>
+            <File>
+              <FileName>queue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Utilities\queue.c</FilePath>
+            </File>
+            <File>
+              <FileName>systime.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Utilities\systime.c</FilePath>
+            </File>
+            <File>
+              <FileName>trace.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Utilities\trace.c</FilePath>
+            </File>
+            <File>
+              <FileName>soft-se.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Crypto\soft-se.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacAdr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacAdr.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacClassB.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacClassB.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacCommands.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacCommands.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacConfirmQueue.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacConfirmQueue.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacFCntHandler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacFCntHandler.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacParser.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacParser.c</FilePath>
+            </File>
+            <File>
+              <FileName>LoRaMacSerializer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Lora\Mac\LoRaMacSerializer.c</FilePath>
             </File>
           </Files>
         </Group>

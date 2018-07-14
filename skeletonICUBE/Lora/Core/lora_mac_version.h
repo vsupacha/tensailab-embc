@@ -15,8 +15,8 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 /******************************************************************************
   * @file    lora_mac_version.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   defines the lora mac version
   ******************************************************************************
   * @attention
@@ -71,8 +71,8 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 
 /*the 3 MSBs define the version based on Github version         */
 /*https://github.com/Lora-net/LoRaMac-node/wiki/LoRaMAC-node-Wiki*/
-/* version 4.4.0 from develop branch */
-#define LORA_MAC_VERSION   (uint32_t) 0x44100000
+/* version 4.4.2-rc.1 from develop branch */
+#define LORA_MAC_VERSION   (uint32_t) 0x44210000
    
 /* Exported types ------------------------------------------------------------*/
 /* External variables --------------------------------------------------------*/

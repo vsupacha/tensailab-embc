@@ -2,8 +2,6 @@
  ******************************************************************************
  * @file    low_power_manager.c
  * @author  MCD Application Team
- * @version V1.1.5
- * @date    30-March-2018
  * @brief   Low Power Manager
  ******************************************************************************
  * @attention

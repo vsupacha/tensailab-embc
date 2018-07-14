@@ -2,8 +2,8 @@
 /******************************************************************************
   * @file    debug.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   debug API
   ******************************************************************************
   * @attention
@@ -48,12 +48,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "hw.h"
 
-/**
-  * @brief Initializes the debug
-  * @param None
-  * @retval None
-  */
-void DBG_Init( void )
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Exported functions ------------------------------------------------------- */
+
+void DBG_Init(void)
 {
 #ifdef DEBUG
   GPIO_InitTypeDef  gpioinitstruct = {0};
@@ -74,9 +76,6 @@ void DBG_Init( void )
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, GPIO_PIN_RESET);
-#if 0
-  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_1);  
-#endif
 
   __HAL_RCC_DBGMCU_CLK_ENABLE( );
 
@@ -103,17 +102,13 @@ void DBG_Init( void )
 #endif
 }
 
-/**
-  * @brief Error_Handler
-  * @param None
-  * @retval None
-  */
 void Error_Handler(void)
 {
-  DBG_PRINTF("Error_Handler\n\r");
-  while(1);
+  PRINTF("Error_Handler\n\r");
+  while (1)
+  {
+    ;
+  }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-
-

@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    mlm32l0xx_it.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   manages interupt
   ******************************************************************************
   * @attention
@@ -60,6 +60,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 /* Includes ------------------------------------------------------------------*/
 #include "hw.h"
+#include "vcom.h"
 #include "mlm32l0xx_it.h"
 
 
@@ -75,8 +76,6 @@ Maintainer: Miguel Luis and Gregory Cristian
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-/* UART handler declared in "main.c" file */
-
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -203,10 +202,14 @@ void SysTick_Handler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
-
-void USART2_IRQHandler( void )
+void USARTx_IRQHandler( void )
 {
-   vcom_Print( );
+  vcom_IRQHandler();
+}
+
+void USARTx_DMA_TX_IRQHandler( void )
+{
+  vcom_DMA_TX_IRQHandler();
 }
 
 void RTC_IRQHandler( void )

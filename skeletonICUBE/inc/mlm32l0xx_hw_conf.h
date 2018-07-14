@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    mlm32l0xx_hw_conf.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   contains hardaware configuration Macros and Constants
   ******************************************************************************
   * @attention
@@ -132,8 +132,6 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 /* ADC MACRO redefinition */
 
-#define BAT_LEVEL_PORT  GPIOA //CRF2
-#define BAT_LEVEL_PIN  GPIO_PIN_4
 #define ADC_READ_CHANNEL                 ADC_CHANNEL_4
 #define ADCCLK_ENABLE()                 __HAL_RCC_ADC1_CLK_ENABLE() ;
 #define ADCCLK_DISABLE()                __HAL_RCC_ADC1_CLK_DISABLE() ;
@@ -146,27 +144,39 @@ Maintainer: Miguel Luis and Gregory Cristian
 
 #define RTC_Alarm_IRQn              RTC_IRQn
 /* --------------------------- USART HW definition -------------------------------*/
+#define USARTx                           USART2
+#define USARTx_CLK_ENABLE()              __USART2_CLK_ENABLE();
+#define USARTx_RX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
+#define USARTx_TX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE() 
+#define DMAx_CLK_ENABLE()                __HAL_RCC_DMA1_CLK_ENABLE()
+
+#define USARTx_FORCE_RESET()             __USART2_FORCE_RESET()
+#define USARTx_RELEASE_RESET()           __USART2_RELEASE_RESET()
 
 
-#define USARTX                           USART2
-#define USARTX_CLK_ENABLE()              __USART2_CLK_ENABLE();
-#define USARTX_RX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE()
-#define USARTX_TX_GPIO_CLK_ENABLE()      __GPIOA_CLK_ENABLE() 
-
-#define USARTX_FORCE_RESET()             __USART2_FORCE_RESET()
-#define USARTX_RELEASE_RESET()           __USART2_RELEASE_RESET()
-
-
-#define USARTX_TX_PIN                  GPIO_PIN_2
-#define USARTX_TX_GPIO_PORT            GPIOA  
-#define USARTX_TX_AF                   GPIO_AF4_USART2
-#define USARTX_RX_PIN                  GPIO_PIN_3
-#define USARTX_RX_GPIO_PORT            GPIOA 
-#define USARTX_RX_AF                   GPIO_AF4_USART2
+#define USARTx_TX_PIN                  GPIO_PIN_2
+#define USARTx_TX_GPIO_PORT            GPIOA  
+#define USARTx_TX_AF                   GPIO_AF4_USART2
+#define USARTx_RX_PIN                  GPIO_PIN_3
+#define USARTx_RX_GPIO_PORT            GPIOA 
+#define USARTx_RX_AF                   GPIO_AF4_USART2
 
 /* Definition for USARTx's NVIC */
-#define USARTX_IRQn                      USART2_IRQn
-#define USARTX_IRQHandler                USART2_IRQHandler
+#define USARTx_IRQn                      USART2_IRQn
+#define USARTx_IRQHandler                USART2_IRQHandler
+
+/* Definition for USARTx's DMA */
+#define USARTx_TX_DMA_CHANNEL             DMA1_Channel7
+
+/* Definition for USARTx's DMA Request */
+#define USARTx_TX_DMA_REQUEST             DMA_REQUEST_4
+
+/* Definition for USARTx's NVIC */
+#define USARTx_DMA_TX_IRQn                DMA1_Channel4_5_6_7_IRQn
+#define USARTx_DMA_TX_IRQHandler          DMA1_Channel4_5_6_7_IRQHandler
+
+#define USARTx_Priority 0
+#define USARTx_DMA_Priority 0
 
 #define LED_Toggle( x )                 BSP_LED_Toggle( x );
 #define LED_On( x )                     BSP_LED_On( x );

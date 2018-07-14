@@ -28,6 +28,8 @@
  *
  * \author    Daniel Jaeckle ( STACKFORCE )
  *
+ * \author    Johannes Bruder ( STACKFORCE )
+ *
  * \defgroup  REGIONCOMMON Common region implementation
  *            Region independent implementations which are common to all regions.
  * \{
@@ -35,7 +37,8 @@
 #ifndef __REGIONCOMMON_H__
 #define __REGIONCOMMON_H__
 
-#include "LoRaMac.h"
+#include "LoRaMacTypes.h"
+#include "region/Region.h"
 
 typedef struct sRegionCommonLinkAdrParams
 {
@@ -63,6 +66,10 @@ typedef struct sRegionCommonLinkAdrParams
 
 typedef struct sRegionCommonLinkAdrReqVerifyParams
 {
+    /*!
+     * LoRaWAN specification Version
+     */
+    Version_t Version;
     /*!
      * The current status of the AdrLinkRequest.
      */
@@ -160,6 +167,38 @@ typedef struct sRegionCommonCalcBackOffParams
      */
     TimerTime_t TxTimeOnAir;
 }RegionCommonCalcBackOffParams_t;
+
+typedef struct sRegionCommonRxBeaconSetupParams
+{
+    /*!
+     * A pointer to the available datarates.
+     */
+    const uint8_t* Datarates;
+    /*!
+     * Frequency
+     */
+    uint32_t Frequency;
+    /*!
+     * The size of the beacon frame.
+     */
+    uint8_t BeaconSize;
+    /*!
+     * The datarate of the beacon.
+     */
+    uint8_t BeaconDatarate;
+    /*!
+     * The channel bandwidth of the beacon.
+     */
+    uint8_t BeaconChannelBW;
+    /*!
+     * The RX time.
+     */
+    uint32_t RxTime;
+    /*!
+     * The symbol timeout of the RX procedure.
+     */
+    uint16_t SymbolTimeout;
+}RegionCommonRxBeaconSetupParams_t;
 
 /*!
  * \brief Calculates the join duty cycle.
@@ -363,6 +402,13 @@ int8_t RegionCommonComputeTxPower( int8_t txPowerIndex, float maxEirp, float ant
  * \param [IN] calcBackOffParams A pointer to the input parameters.
  */
 void RegionCommonCalcBackOff( RegionCommonCalcBackOffParams_t* calcBackOffParams );
+
+/*!
+ * \brief Sets up the radio into RX beacon mode.
+ *
+ * \param [IN] rxBeaconSetupParams A pointer to the input parameters.
+ */
+void RegionCommonRxBeaconSetup( RegionCommonRxBeaconSetupParams_t* rxBeaconSetupParams );
 
 /*! \} defgroup REGIONCOMMON */
 

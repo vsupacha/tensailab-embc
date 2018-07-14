@@ -15,8 +15,6 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 /******************************************************************************
   * @file    timeserver.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
   * @brief   Time server infrastructure
   ******************************************************************************
   * @attention
@@ -126,6 +124,7 @@ static bool TimerExists( TimerEvent_t *obj );
 
 
 
+
 void TimerInit( TimerEvent_t *obj, void ( *callback )( void ) )
 {
   obj->Timestamp = 0;
@@ -174,43 +173,7 @@ void TimerStart( TimerEvent_t *obj )
   RESTORE_PRIMASK( );
 }
 
-static void TimerInsertTimer( TimerEvent_t *obj)
-{
-  TimerEvent_t* cur = TimerListHead;
-  TimerEvent_t* next = TimerListHead->Next;
 
-  while (cur->Next != NULL )
-  {  
-    if( obj->Timestamp  > next->Timestamp )
-    {
-        cur = next;
-        next = next->Next;
-    }
-    else
-    {
-        cur->Next = obj;
-        obj->Next = next;
-        return;
-
-    }
-  }
-  cur->Next = obj;
-  obj->Next = NULL;
-}
-
-static void TimerInsertNewHeadTimer( TimerEvent_t *obj )
-{
-  TimerEvent_t* cur = TimerListHead;
-
-  if( cur != NULL )
-  {
-    cur->IsRunning = false;
-  }
-
-  obj->Next = cur;
-  TimerListHead = obj;
-  TimerSetTimeout( TimerListHead );
-}
 
 void TimerIrqHandler( void )
 {
@@ -339,20 +302,7 @@ void TimerStop( TimerEvent_t *obj )
   RESTORE_PRIMASK( );
 }  
   
-static bool TimerExists( TimerEvent_t *obj )
-{
-  TimerEvent_t* cur = TimerListHead;
 
-  while( cur != NULL )
-  {
-    if( cur == obj )
-    {
-      return true;
-    }
-    cur = cur->Next;
-  }
-  return false;
-}
 
 void TimerReset( TimerEvent_t *obj )
 {
@@ -392,6 +342,20 @@ TimerTime_t TimerGetElapsedTime( TimerTime_t past )
   return HW_RTC_Tick2ms( nowInTicks- pastInTicks );
 }
 
+static bool TimerExists( TimerEvent_t *obj )
+{
+  TimerEvent_t* cur = TimerListHead;
+
+  while( cur != NULL )
+  {
+    if( cur == obj )
+    {
+      return true;
+    }
+    cur = cur->Next;
+  }
+  return false;
+}
 static void TimerSetTimeout( TimerEvent_t *obj )
 {
   int32_t minTicks= HW_RTC_GetMinimumTimeout( );
@@ -403,5 +367,49 @@ static void TimerSetTimeout( TimerEvent_t *obj )
     obj->Timestamp = HW_RTC_GetTimerElapsedTime(  ) + minTicks;
   }
   HW_RTC_SetAlarm( obj->Timestamp );
+}
+
+TimerTime_t TimerTempCompensation( TimerTime_t period, float temperature )
+{
+    return RtcTempCompensation( period, temperature );
+}
+
+
+static void TimerInsertTimer( TimerEvent_t *obj)
+{
+  TimerEvent_t* cur = TimerListHead;
+  TimerEvent_t* next = TimerListHead->Next;
+
+  while (cur->Next != NULL )
+  {  
+    if( obj->Timestamp  > next->Timestamp )
+    {
+        cur = next;
+        next = next->Next;
+    }
+    else
+    {
+        cur->Next = obj;
+        obj->Next = next;
+        return;
+
+    }
+  }
+  cur->Next = obj;
+  obj->Next = NULL;
+}
+
+static void TimerInsertNewHeadTimer( TimerEvent_t *obj )
+{
+  TimerEvent_t* cur = TimerListHead;
+
+  if( cur != NULL )
+  {
+    cur->IsRunning = false;
+  }
+
+  obj->Next = cur;
+  TimerListHead = obj;
+  TimerSetTimeout( TimerListHead );
 }
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

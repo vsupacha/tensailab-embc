@@ -15,8 +15,8 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    bsp.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   contains all hardware driver
   ******************************************************************************
   * @attention
@@ -69,7 +69,13 @@ Maintainer: Miguel Luis and Gregory Cristian
 /* Exported types ------------------------------------------------------------*/
 
 typedef struct{
-  uint32_t dummy;
+  float pressure;    /* in mbar */  
+  float temperature; /* in °C   */
+  float humidity;    /* in %    */
+  int32_t latitude;
+  int32_t longitude ;
+  int16_t  altitudeGps;       /* in m */
+  int16_t altitudeBar ;       /* in m * 10 */
   /**more may be added*/
 } sensor_t;
 

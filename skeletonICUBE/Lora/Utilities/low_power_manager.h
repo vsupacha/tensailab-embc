@@ -2,8 +2,6 @@
 ******************************************************************************
 * @file    low_power_manager.h
 * @author  MCD Application Team
-* @version V1.1.5
-* @date    30-March-2018
 * @brief   Header for stm32xx_lpm.c module
 ******************************************************************************
 * @attention

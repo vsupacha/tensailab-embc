@@ -1,8 +1,8 @@
  /******************************************************************************
   * @file    debug.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   Header for driver debug.c module
   ******************************************************************************
   * @attention
@@ -59,7 +59,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "hw_conf.h"
-#include "vcom.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -83,21 +82,6 @@ void Error_Handler( void );
 
 #define DBG( x )  do{ x } while(0)
 
-#ifdef TRACE
-
-#define DBG_PRINTF(...)    vcom_Send(__VA_ARGS__)
-
-#define DBG_PRINTF_CRITICAL(...)   vcom_Send_Lp(__VA_ARGS__)
-
-#else /*TRACE*/
-
-#define DBG_PRINTF(...) 
-
-#define DBG_PRINTF_CRITICAL(...) 
-
-#endif /*TRACE*/
-
-
 #else /* DEBUG */
 
 #define DBG_GPIO_WRITE( gpio, n, x )
@@ -107,10 +91,6 @@ void Error_Handler( void );
 #define DBG_GPIO_RST( gpio, n )
 
 #define DBG( x ) do{  } while(0)
-
-#define DBG_PRINTF(...)
-
-#define DBG_PRINTF_CRITICAL(...) 
                       
 #define DBG_RTC_OUTPUT RTC_OUTPUT_DISABLE;
 

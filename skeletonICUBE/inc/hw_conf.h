@@ -1,22 +1,8 @@
-/*
- / _____)             _              | |
-( (____  _____ ____ _| |_ _____  ____| |__
- \____ \| ___ |    (_   _) ___ |/ ___)  _ \
- _____) ) ____| | | || |_| ____( (___| | | |
-(______/|_____)_|_|_| \__)_____)\____)_| |_|
-    (C)2013 Semtech
-
-Description: contains hardaware configuration Macros and Constants
-
-License: Revised BSD License, see LICENSE.TXT file include in the project
-
-Maintainer: Miguel Luis and Gregory Cristian
-*/
  /******************************************************************************
   * @file    hw_conf.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   contains hardware configuration Macros and Constants
   ******************************************************************************
   * @attention
@@ -125,9 +111,8 @@ Maintainer: Miguel Luis and Gregory Cristian
 #endif
 
 /* --------Preprocessor compile swicth------------ */
-/* debug swicthes in debug.h */
+/* debug swicth in debug.h */
 //#define DEBUG
-//#define TRACE
    
 /* uncomment below line to never enter lowpower modes in main.c*/
 //#define LOW_POWER_DISABLE

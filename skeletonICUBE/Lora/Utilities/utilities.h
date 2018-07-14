@@ -15,8 +15,6 @@ Maintainer: Miguel Luis and Gregory Cristian
  /******************************************************************************
   * @file    utilities.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
   * @brief   Header for driver utilities.c module
   ******************************************************************************
   * @attention
@@ -60,26 +58,33 @@ Maintainer: Miguel Luis and Gregory Cristian
 #ifndef __UTILITIES_H__
 #define __UTILITIES_H__
 
+
 #include "hw_conf.h"
-
-
+#include "trace.h"
 /* BACKUP_PRIMASK MUST be implemented at the begining of the funtion 
    that implement a critical section                        
    PRIMASK is saved on STACK and recovered at the end of the funtion
-   That way RESTORE_PRIMASK ensures that no irq would be triggered in case of
-   unbalanced enable/disable, reentrant code etc...*/
+   That way RESTORE_PRIMASK ensures critical sections are maintained even in nested calls...*/
 #define BACKUP_PRIMASK()  uint32_t primask_bit= __get_PRIMASK()
 #define DISABLE_IRQ() __disable_irq()
 #define ENABLE_IRQ() __enable_irq()
 #define RESTORE_PRIMASK() __set_PRIMASK(primask_bit)
 
+
+#define CRITICAL_SECTION_BEGIN( )     uint32_t primask_bit= __get_PRIMASK();\
+                                    __disable_irq()
+#define CRITICAL_SECTION_END( )   __set_PRIMASK(primask_bit)
+
+#define LOG(...)     do{ TraceSend(__VA_ARGS__); }while(0);
+
 /* prepocessor directive to align buffer*/
 #define ALIGN(n)             __attribute__((aligned(n)))
 
 /* delay definition */
-/* #define DelayMs(n)             HAL_Delay(n) */
+ #define DelayMs(n)             HAL_Delay(n) 
 
 typedef uint32_t TimerTime_t;
+
 
 /*!
  * \brief Returns the minimum value between a and b
@@ -108,17 +113,19 @@ typedef uint32_t TimerTime_t;
 #define POW2( n ) ( 1 << n )
 
 /*!
- * \brief  Find First Set
- *         This function identifies the least significant index or position of the
- *         bits set to one in the word
- *
- * \param [in]  value  Value to find least significant index
- * \retval bitIndex    Index of least significat bit at one
+ * Version
  */
-__STATIC_INLINE uint8_t __ffs( uint32_t value )
+typedef union Version_u
 {
-    return( uint32_t )( 32 - __CLZ( value & ( -value ) ) );
-}
+    struct Version_s
+    {
+        uint8_t Rfu;
+        uint8_t Revision;
+        uint8_t Minor;
+        uint8_t Major;
+    }Fields;
+    uint32_t Value;
+}Version_t;
 
 /*!
  * \brief Initializes the pseudo random generator initial value
@@ -135,6 +142,13 @@ void srand1( uint32_t seed );
  * \retval random random value in range min..max
  */
 int32_t randr( int32_t min, int32_t max );
+
+/*!
+ * \brief Computes a random number between 
+ *
+ * \retval random random value in range min..max
+ */
+int32_t rand1( void );
 
 /*!
  * \brief Copies size elements of src array to dst array

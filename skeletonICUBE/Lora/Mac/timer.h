@@ -15,8 +15,6 @@ Maintainer: Miguel Luis and Gregory Cristian
 /******************************************************************************
   * @file    timer.h
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
   * @brief   wrapper to  timer server
   ******************************************************************************
   * @attention
@@ -67,15 +65,7 @@ Maintainer: Miguel Luis and Gregory Cristian
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-   
 #include "timeServer.h"
-
-/* Exported types ------------------------------------------------------------*/
-
-/*!
- * \brief Timer object description
- */
-
 
 #ifdef __cplusplus
 }

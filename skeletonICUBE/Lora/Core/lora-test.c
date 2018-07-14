@@ -15,8 +15,8 @@ Maintainer: Miguel Luis, Gregory Cristian and Wael Guibene
 /******************************************************************************
   * @file    lora-test.c
   * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    30-March-2018
+  * @version V1.2.0
+  * @date    10-July-2018
   * @brief   lora API to drive the lora state Machine
   ******************************************************************************
   * @attention
@@ -318,6 +318,36 @@ void certif_rx( McpsIndication_t *mcpsIndication, MlmeReqJoin_t* JoinParameters)
           certifParam.State = 1;
           break;
         }
+        case 8: // Switch end device Class
+        {
+          MibRequestConfirm_t mibReq;
+
+          mibReq.Type = MIB_DEVICE_CLASS;
+          // CLASS_A = 0, CLASS_B = 1, CLASS_C = 2
+          mibReq.Param.Class = ( DeviceClass_t )mcpsIndication->Buffer[1];
+          LoRaMacMibSetRequestConfirm( &mibReq );
+          break;
+        }
+        case 9: // Send PingSlotInfoReq
+        {
+          MlmeReq_t mlmeReq;
+
+          mlmeReq.Type = MLME_PING_SLOT_INFO;
+
+          mlmeReq.Req.PingSlotInfo.PingSlot.Value = mcpsIndication->Buffer[1];
+
+          LoRaMacMlmeRequest( &mlmeReq );
+          break;
+        }
+        case 11: // Send BeaconTimingReq
+        {
+          MlmeReq_t mlmeReq;
+          
+          mlmeReq.Type = MLME_BEACON_TIMING;
+          
+          LoRaMacMlmeRequest( &mlmeReq );
+          break;
+        }        
         default:                  
           break;
         }

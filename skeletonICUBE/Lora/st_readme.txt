@@ -49,6 +49,15 @@
   ******************************************************************************
   @endverbatim
 
+### V1.2.0/10-July-2018 ###
+===============================
+   +  Implements LoRa Mac 4.4.2-rc.1 from Semtech/StackForce develop branch
+
+   + Supports Class B
+   + Features secure element API
+   + Added RU864 region
+   + Removed US915-Hybrid
+  
 ### V1.1.5/30-March-2018 ###
 ===============================
    +  Implements LoRa Mac 4.4.1 from Semtech/StackForce
