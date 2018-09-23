@@ -75,3 +75,14 @@
 - GPIO input ตั้งการทำงานแบบ EXTI แบบ rising, no pull สำหรับขา PB4 (DIO0), PB1 (DIO1), PB0 (DIO2) และ PC13 (DIO3) แล้วไปเปิดใช้งาน EXTI interrupt กลุ่ม 0-1 และกลุ่ม 4-15
 - ADC เปิดใช้งานเพื่อวัด temperature และ vrefint
 - NVIC เปิดใช้งาน interrupt สำหรับ RTC, EXTI และ EXTI
+
+### รุ่น 0.2
+เพิ่มไฟล์จาก I-CUBE-LRWAN ที่จำเป็น โดยปรับแก้บางส่วนในกลุ่มไฟล์ hw ที่ abstract การทำงานของ STM32 เพื่อให้คอมไพล์ผ่าน
+1. เพิ่มไฟล์เข้ากลุ่ม Middlewares/LoRaWAN โดยสำเนาจากโฟลเดอร์ Middlewares\Third_Party\LoRaWAN
+2. เพิ่มไฟล์เข้ากลุ่ม Drivers/BSP โดยสำเนาจากโฟลเดอร์ B-L072Z-LRWAN1, CMWX1ZZABZ-0xx, sx1276 ที่อยู่ภายในโฟลเดอร์ Drivers/BSP
+3. เพิ่มไฟล์เข้ากลุ่ม Applications/User โดยสำเนาจากโฟลเดอร์ Projects\B-L072Z-LRWAN1\Applications\LoRa\End_Node\LoRaWAN\App\src
+4. เพิ่มรายการของโฟลเดอร์ที่มีไฟล์ header
+5. ตั้งค่า Defines ในแท็บ C/C++ คือ USE_B_L072Z_LRWAN1, REGION_AS923
+6. ลบส่วนโค้ด Error_Handler() ใน debug.c และ debug.h
+7. ลบส่วนโค้ด SystemClockConfig() HAL_x_MspInit() HAL_xxx_MspDeInit และ handler ของ interrupt ในไฟล์ mlm32l0xx_hw.c mlm32l0xx_hal_msp.c และ mlm32l0xx_it.c
+
