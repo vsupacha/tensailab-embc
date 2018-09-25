@@ -41,7 +41,13 @@
 #include "stm32l0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "hw.h"
+#include "low_power_manager.h"
+#include "lora.h"
+#include "bsp.h"
+#include "timeServer.h"
+#include "vcom.h"
+#include "version.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -56,7 +62,37 @@ DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+/*!
+ * Defines the application data transmission duty cycle. 5s, value in [ms].
+ */
+#define APP_TX_DUTYCYCLE                            10000
+/*!
+ * LoRaWAN Adaptive Data Rate
+ * @note Please note that when ADR is enabled the end-device should be static
+ */
+#define LORAWAN_ADR_STATE                           LORAWAN_ADR_ON
+/*!
+ * LoRaWAN Default data Rate Data Rate
+ * @note Please note that LORAWAN_DEFAULT_DATA_RATE is used only when ADR is disabled 
+ */
+#define LORAWAN_DEFAULT_DATA_RATE                   DR_0
+/*!
+ * LoRaWAN application port
+ * @note do not use 224. It is reserved for certification
+ */
+#define LORAWAN_APP_PORT                            2
+/*!
+ * LoRaWAN default endNode class port
+ */
+#define LORAWAN_DEFAULT_CLASS                       CLASS_A
+/*!
+ * LoRaWAN default confirm state
+ */
+#define LORAWAN_DEFAULT_CONFIRM_MSG_STATE           LORAWAN_UNCONFIRMED_MSG
+/*!
+ * User application data buffer size
+ */
+#define LORAWAN_APP_DATA_BUFF_SIZE                  64
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,11 +106,53 @@ static void MX_RTC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+/* call back when LoRa endNode has received a frame*/
+static void LORA_RxData( lora_AppData_t *AppData);
 
+/* call back when LoRa endNode has just joined*/
+static void LORA_HasJoined( void );
+
+/* call back when LoRa endNode has just switch the class*/
+static void LORA_ConfirmClass ( DeviceClass_t Class );
+
+/* call back when server needs endNode to send a frame*/
+static void LORA_TxNeeded ( void );
+
+/* start the tx process*/
+static void LoraStartTx(TxEventType_t EventType);
+
+/* tx timer callback function*/
+static void OnTxTimerEvent( void );
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
+/* load Main call backs structure*/
+/*!
+ * User application data
+ */
+static uint8_t AppDataBuff[LORAWAN_APP_DATA_BUFF_SIZE];
 
+/*!
+ * User application data structure
+ */
+lora_AppData_t AppData = { AppDataBuff,  0 ,0 };
+
+static TimerEvent_t TxTimer;
+
+static LoRaMainCallback_t LoRaMainCallbacks = { HW_GetBatteryLevel,
+                                                HW_GetTemperatureLevel,
+                                                HW_GetUniqueId,
+                                                HW_GetRandomSeed,
+                                                LORA_RxData,
+                                                LORA_HasJoined,
+                                                LORA_ConfirmClass,
+                                                LORA_TxNeeded};
+/* !
+ *Initialises the Lora Parameters
+ */
+static  LoRaParam_t LoRaParamInit= {LORAWAN_ADR_STATE,
+                                    LORAWAN_DEFAULT_DATA_RATE,  
+                                    LORAWAN_PUBLIC_NETWORK};
 /* USER CODE END 0 */
 
 /**
@@ -112,7 +190,18 @@ int main(void)
   MX_USART2_UART_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
-
+  DBG_Init();  
+  TraceInit();
+  Radio.IoInit( );
+  /*Disbale Stand-by mode*/
+  LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable );
+  
+  PRINTNOW();
+  PRINTF("Start program\n\r");
+  
+  LORA_Init( &LoRaMainCallbacks, &LoRaParamInit);
+  LORA_Join();
+  LoraStartTx(TX_ON_TIMER) ;  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,7 +212,19 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+    LoRaMacProcess( );
+    DISABLE_IRQ( );
+    /* if an interrupt has occurred after DISABLE_IRQ, it is kept pending 
+     * and cortex will not enter low power anyway  */
 
+#ifndef LOW_POWER_DISABLE
+    LPM_EnterLowPower( );
+#endif
+
+    ENABLE_IRQ();
+    PRINTNOW();
+    PRINTF("At loop end\n\r");  
+    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 
@@ -284,12 +385,12 @@ static void MX_RTC_Init(void)
 
     /**Initialize RTC and set the Time and Date 
     */
-  sTime.Hours = 0x0;
-  sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
+  sTime.Hours = 0;
+  sTime.Minutes = 0;
+  sTime.Seconds = 0;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -299,31 +400,32 @@ static void MX_RTC_Init(void)
 
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_JANUARY;
-  sDate.Date = 0x1;
-  sDate.Year = 0x0;
+  sDate.Date = 1;
+  sDate.Year = 0;
 
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
   /* USER CODE BEGIN RTC_Init 4 */
-
+  /*Enable Direct Read of the calendar registers (not through Shadow) */
+  HAL_RTCEx_EnableBypassShadow(&hrtc);
   /* USER CODE END RTC_Init 4 */
 
     /**Enable the Alarm A 
     */
-  sAlarm.AlarmTime.Hours = 0x0;
-  sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x0;
-  sAlarm.AlarmTime.SubSeconds = 0x0;
+  sAlarm.AlarmTime.Hours = 0;
+  sAlarm.AlarmTime.Minutes = 0;
+  sAlarm.AlarmTime.Seconds = 0;
+  sAlarm.AlarmTime.SubSeconds = 0;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_NONE;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-  sAlarm.AlarmDateWeekDay = 0x1;
+  sAlarm.AlarmDateWeekDay = 1;
   sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
@@ -411,20 +513,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SX1276_NSS_Pin|TCXO_Pin|ANT_RX_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(SX1276_NSS_GPIO_Port, SX1276_NSS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, TCXO_Pin|ANT_RX_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, ANT_TX_BOOST_Pin|SX1276_RESET_Pin|ANT_TX_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : SX1276_NSS_Pin */
-  GPIO_InitStruct.Pin = SX1276_NSS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(SX1276_NSS_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : TCXO_Pin ANT_RX_Pin */
-  GPIO_InitStruct.Pin = TCXO_Pin|ANT_RX_Pin;
+  /*Configure GPIO pins : SX1276_NSS_Pin TCXO_Pin ANT_RX_Pin */
+  GPIO_InitStruct.Pin = SX1276_NSS_Pin|TCXO_Pin|ANT_RX_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -459,7 +557,86 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+static void Send( void )
+{
+  uint32_t i = 0;
+  uint8_t batteryLevel;  
+  
+  if ( LORA_JoinStatus () != LORA_SET)
+  {
+    /*Not joined, try again later*/
+    LORA_Join();
+    return;
+  }
+  batteryLevel = HW_GetBatteryLevel( );                     /* 1 (very low) to 254 (fully charged) */
+  AppData.Buff[i++] = batteryLevel*100/254;
+  AppData.BuffSize = i;
+  AppData.Port = LORAWAN_APP_PORT;
+  
+  LORA_send( &AppData, LORAWAN_DEFAULT_CONFIRM_MSG_STATE);
+}
 
+static void LORA_RxData( lora_AppData_t *AppData )
+{
+  PRINTF("PACKET RECEIVED ON PORT %d\n\r", AppData->Port);
+
+  switch (AppData->Port)
+  {
+    case 0:
+      break;    
+    default:
+      break;
+  }
+}
+
+static void LoraStartTx(TxEventType_t EventType)
+{
+  if (EventType == TX_ON_TIMER)
+  {
+    /* send everytime timer elapses */
+    TimerInit( &TxTimer, OnTxTimerEvent );
+    TimerSetValue( &TxTimer,  APP_TX_DUTYCYCLE); 
+    OnTxTimerEvent();
+  }
+  else
+  {
+    /* send everytime button is pushed */
+    GPIO_InitTypeDef initStruct={0};
+  
+    initStruct.Mode =GPIO_MODE_IT_RISING;
+    initStruct.Pull = GPIO_PULLUP;
+    initStruct.Speed = GPIO_SPEED_HIGH;
+
+    HW_GPIO_Init( USER_BUTTON_GPIO_PORT, USER_BUTTON_PIN, &initStruct );
+    HW_GPIO_SetIrq( USER_BUTTON_GPIO_PORT, USER_BUTTON_PIN, 0, Send );
+  }
+}
+
+static void LORA_HasJoined( void )
+{
+#if( OVER_THE_AIR_ACTIVATION != 0 )
+  PRINTF("JOINED\n\r");
+#endif
+  LORA_RequestClass( LORAWAN_DEFAULT_CLASS );
+}
+
+static void LORA_ConfirmClass ( DeviceClass_t Class )
+{
+  PRINTF("switch to class %c done\n\r","ABC"[Class] );
+}
+
+static void LORA_TxNeeded ( void )
+{
+  PRINTF("TX NEEDED\n\r");
+}
+
+static void OnTxTimerEvent( void )
+{
+  /*Wait for next tx slot*/
+  TimerStart( &TxTimer);
+  /*Send*/
+  Send( );
+}
 /* USER CODE END 4 */
 
 /**

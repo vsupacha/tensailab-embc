@@ -52,7 +52,8 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Uart Handle */
-static UART_HandleTypeDef UartHandle;
+// static UART_HandleTypeDef UartHandle;
+extern UART_HandleTypeDef huart2;
 
 static void (*TxCpltCallback) (void);
 /* Private function prototypes -----------------------------------------------*/
@@ -62,6 +63,7 @@ void vcom_Init(  void (*TxCb)(void) )
 
   /*Record Tx complete for DMA*/
   TxCpltCallback=TxCb;
+  // REMOVED: redundant with CubeMX
   /*## Configure the UART peripheral ######################################*/
   /* Put the USART peripheral in the Asynchronous mode (UART Mode) */
   /* UART1 configured as follow:
@@ -70,25 +72,25 @@ void vcom_Init(  void (*TxCb)(void) )
       - Parity = ODD parity
       - BaudRate = 921600 baud
       - Hardware flow control disabled (RTS and CTS signals) */
-  UartHandle.Instance        = USARTx;
-  
-  UartHandle.Init.BaudRate   = 115200;
-  UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-  UartHandle.Init.StopBits   = UART_STOPBITS_1;
-  UartHandle.Init.Parity     = UART_PARITY_NONE;
-  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-  UartHandle.Init.Mode       = UART_MODE_TX;
-  
-  if(HAL_UART_Init(&UartHandle) != HAL_OK)
-  {
-    /* Initialization Error */
-    Error_Handler(); 
-  }
+//  UartHandle.Instance        = USARTx;
+//  
+//  UartHandle.Init.BaudRate   = 115200;
+//  UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
+//  UartHandle.Init.StopBits   = UART_STOPBITS_1;
+//  UartHandle.Init.Parity     = UART_PARITY_NONE;
+//  UartHandle.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+//  UartHandle.Init.Mode       = UART_MODE_TX;
+//  
+//  if(HAL_UART_Init(&UartHandle) != HAL_OK)
+//  {
+//    /* Initialization Error */
+//    Error_Handler(); 
+//  }
 }
 
 void vcom_Trace(  uint8_t *p_data, uint16_t size )
 {
-  HAL_UART_Transmit_DMA(&UartHandle,p_data, size);
+  HAL_UART_Transmit_DMA(&huart2,p_data, size);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
@@ -99,17 +101,17 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *UartHandle)
 
 void vcom_DMA_TX_IRQHandler(void)
 {
-  HAL_DMA_IRQHandler(UartHandle.hdmatx);
+  HAL_DMA_IRQHandler(huart2.hdmatx);
 }
 
 void vcom_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&UartHandle);
+  HAL_UART_IRQHandler(&huart2);
 }
 
 void vcom_DeInit(void)
 {
-  HAL_UART_DeInit(&UartHandle);
+  HAL_UART_DeInit(&huart2);
 }
 
 // REMOVED: conflict with CubeMX

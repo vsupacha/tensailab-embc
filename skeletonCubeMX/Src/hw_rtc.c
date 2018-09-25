@@ -143,7 +143,8 @@ static const uint8_t DaysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 3
  */
 static const uint8_t DaysInMonthLeapYear[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-static RTC_HandleTypeDef RtcHandle={0};
+//static RTC_HandleTypeDef RtcHandle={0};
+extern RTC_HandleTypeDef hrtc;
 
 static RTC_AlarmTypeDef RTC_AlarmStructure;
 
@@ -192,41 +193,41 @@ void HW_RTC_Init( void )
  */
 static void HW_RTC_SetConfig( void )
 {
-  RTC_TimeTypeDef RTC_TimeStruct;
-  RTC_DateTypeDef RTC_DateStruct;
+  // REMOVED: redundant with CubeMX
+  //RTC_TimeTypeDef RTC_TimeStruct;
+  //RTC_DateTypeDef RTC_DateStruct;
+//  RtcHandle.Instance = RTC;
 
-  RtcHandle.Instance = RTC;
+//  RtcHandle.Init.HourFormat = RTC_HOURFORMAT_24;
+//  RtcHandle.Init.AsynchPrediv = PREDIV_A; /* RTC_ASYNCH_PREDIV; */
+//  RtcHandle.Init.SynchPrediv = PREDIV_S; /* RTC_SYNCH_PREDIV; */
+//  RtcHandle.Init.OutPut = RTC_OUTPUT;
+//  RtcHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+//  RtcHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
 
-  RtcHandle.Init.HourFormat = RTC_HOURFORMAT_24;
-  RtcHandle.Init.AsynchPrediv = PREDIV_A; /* RTC_ASYNCH_PREDIV; */
-  RtcHandle.Init.SynchPrediv = PREDIV_S; /* RTC_SYNCH_PREDIV; */
-  RtcHandle.Init.OutPut = RTC_OUTPUT;
-  RtcHandle.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
-  RtcHandle.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+//  HAL_RTC_Init( &RtcHandle );
+//  
+//  /*Monday 1st January 2016*/
+//  RTC_DateStruct.Year = 0;
+//  RTC_DateStruct.Month = RTC_MONTH_JANUARY;
+//  RTC_DateStruct.Date = 1;
+//  RTC_DateStruct.WeekDay = RTC_WEEKDAY_MONDAY;
+//  HAL_RTC_SetDate(&RtcHandle , &RTC_DateStruct, RTC_FORMAT_BIN);
+//  
+//  /*at 0:0:0*/
+//  RTC_TimeStruct.Hours = 0;
+//  RTC_TimeStruct.Minutes = 0;
 
-  HAL_RTC_Init( &RtcHandle );
-  
-  /*Monday 1st January 2016*/
-  RTC_DateStruct.Year = 0;
-  RTC_DateStruct.Month = RTC_MONTH_JANUARY;
-  RTC_DateStruct.Date = 1;
-  RTC_DateStruct.WeekDay = RTC_WEEKDAY_MONDAY;
-  HAL_RTC_SetDate(&RtcHandle , &RTC_DateStruct, RTC_FORMAT_BIN);
-  
-  /*at 0:0:0*/
-  RTC_TimeStruct.Hours = 0;
-  RTC_TimeStruct.Minutes = 0;
-
-  RTC_TimeStruct.Seconds = 0;
-  RTC_TimeStruct.TimeFormat = 0;
-  RTC_TimeStruct.SubSeconds = 0;
-  RTC_TimeStruct.StoreOperation = RTC_DAYLIGHTSAVING_NONE;
-  RTC_TimeStruct.DayLightSaving = RTC_STOREOPERATION_RESET;
-  
-  HAL_RTC_SetTime(&RtcHandle , &RTC_TimeStruct, RTC_FORMAT_BIN);
-  
- /*Enable Direct Read of the calendar registers (not through Shadow) */
-  HAL_RTCEx_EnableBypassShadow(&RtcHandle);
+//  RTC_TimeStruct.Seconds = 0;
+//  RTC_TimeStruct.TimeFormat = 0;
+//  RTC_TimeStruct.SubSeconds = 0;
+//  RTC_TimeStruct.StoreOperation = RTC_DAYLIGHTSAVING_NONE;
+//  RTC_TimeStruct.DayLightSaving = RTC_STOREOPERATION_RESET;
+//  
+//  HAL_RTC_SetTime(&RtcHandle , &RTC_TimeStruct, RTC_FORMAT_BIN);
+//  
+// /*Enable Direct Read of the calendar registers (not through Shadow) */
+//  HAL_RTCEx_EnableBypassShadow(&RtcHandle);
 }
 
 
@@ -251,7 +252,7 @@ void HW_RTC_setMcuWakeUpTime( void )
     McuWakeUpTimeInitialized = true;
     now = (uint32_t) HW_RTC_GetCalendarValue( &RTC_DateStruct, &RTC_TimeStruct );
 
-    HAL_RTC_GetAlarm(&RtcHandle, &RTC_AlarmStructure, RTC_ALARM_A, RTC_FORMAT_BIN );
+    HAL_RTC_GetAlarm(&hrtc, &RTC_AlarmStructure, RTC_ALARM_A, RTC_FORMAT_BIN );
     hit = RTC_AlarmStructure.AlarmTime.Seconds+
           60*(RTC_AlarmStructure.AlarmTime.Minutes+
           60*(RTC_AlarmStructure.AlarmTime.Hours+
@@ -366,9 +367,9 @@ uint32_t HW_RTC_GetTimerValue( void )
 void HW_RTC_StopAlarm( void )
 {
   /* Disable the Alarm A interrupt */
-  HAL_RTC_DeactivateAlarm(&RtcHandle, RTC_ALARM_A );
+  HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A );
   /* Clear RTC Alarm Flag */
-  __HAL_RTC_ALARM_CLEAR_FLAG( &RtcHandle, RTC_FLAG_ALRAF);
+  __HAL_RTC_ALARM_CLEAR_FLAG( &hrtc, RTC_FLAG_ALRAF);
   /* Clear the EXTI's line Flag for RTC Alarm */  
   __HAL_RTC_ALARM_EXTI_CLEAR_FLAG();
 }
@@ -380,7 +381,7 @@ void HW_RTC_StopAlarm( void )
  */
 void HW_RTC_IrqHandler ( void )
 {
-  RTC_HandleTypeDef* hrtc=&RtcHandle;
+  //RTC_HandleTypeDef* hrtc=&RtcHandle;
   /* enable low power at irq*/
   LPM_SetStopMode(LPM_RTC_Id , LPM_Enable );
   
@@ -388,15 +389,15 @@ void HW_RTC_IrqHandler ( void )
   __HAL_RTC_ALARM_EXTI_CLEAR_FLAG();
   
     /* Get the AlarmA interrupt source enable status */
-  if(__HAL_RTC_ALARM_GET_IT_SOURCE(hrtc, RTC_IT_ALRA) != RESET)
+  if(__HAL_RTC_ALARM_GET_IT_SOURCE(&hrtc, RTC_IT_ALRA) != RESET)
   {
     /* Get the pending status of the AlarmA Interrupt */
-    if(__HAL_RTC_ALARM_GET_FLAG(hrtc, RTC_FLAG_ALRAF) != RESET)
+    if(__HAL_RTC_ALARM_GET_FLAG(&hrtc, RTC_FLAG_ALRAF) != RESET)
     {
       /* Clear the AlarmA interrupt pending bit */
-      __HAL_RTC_ALARM_CLEAR_FLAG(hrtc, RTC_FLAG_ALRAF); 
+      __HAL_RTC_ALARM_CLEAR_FLAG(&hrtc, RTC_FLAG_ALRAF); 
       /* AlarmA callback */
-      HAL_RTC_AlarmAEventCallback(hrtc);
+      HAL_RTC_AlarmAEventCallback(&hrtc);
     }
   }
 }
@@ -451,7 +452,7 @@ uint32_t HW_RTC_GetTimerContext( void )
  */
 static void HW_RTC_SetAlarmConfig( void )
 {
-  HAL_RTC_DeactivateAlarm(&RtcHandle, RTC_ALARM_A);
+  HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_A);
 }
 
 /*!
@@ -560,7 +561,7 @@ static void HW_RTC_StartWakeUpAlarm( uint32_t timeoutValue )
   RTC_AlarmStructure.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   
   /* Set RTC_Alarm */
-  HAL_RTC_SetAlarm_IT( &RtcHandle, &RTC_AlarmStructure, RTC_FORMAT_BIN );
+  HAL_RTC_SetAlarm_IT( &hrtc, &RTC_AlarmStructure, RTC_FORMAT_BIN );
 }
 
 
@@ -578,13 +579,13 @@ static uint64_t HW_RTC_GetCalendarValue( RTC_DateTypeDef* RTC_DateStruct, RTC_Ti
   uint32_t seconds;
   
   /* Get Time and Date*/
-  HAL_RTC_GetTime( &RtcHandle, RTC_TimeStruct, RTC_FORMAT_BIN );
+  HAL_RTC_GetTime( &hrtc, RTC_TimeStruct, RTC_FORMAT_BIN );
  
    /* make sure it is correct due to asynchronus nature of RTC*/
   do {
     first_read = RTC_TimeStruct->SubSeconds;
-    HAL_RTC_GetDate( &RtcHandle, RTC_DateStruct, RTC_FORMAT_BIN );
-    HAL_RTC_GetTime( &RtcHandle, RTC_TimeStruct, RTC_FORMAT_BIN );
+    HAL_RTC_GetDate( &hrtc, RTC_DateStruct, RTC_FORMAT_BIN );
+    HAL_RTC_GetTime( &hrtc, RTC_TimeStruct, RTC_FORMAT_BIN );
   } while (first_read != RTC_TimeStruct->SubSeconds);
  
   /* calculte amount of elapsed days since 01/01/2000 */
@@ -635,14 +636,14 @@ uint32_t HW_RTC_GetCalendarTime( uint16_t *mSeconds)
 
 void HW_RTC_BKUPWrite( uint32_t Data0, uint32_t Data1)
 {
-  HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR0, Data0);
-  HAL_RTCEx_BKUPWrite(&RtcHandle, RTC_BKP_DR1, Data1);
+  HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, Data0);
+  HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, Data1);
 }
 
 void HW_RTC_BKUPRead( uint32_t *Data0, uint32_t *Data1)
 {
-  *Data0=HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR0);
-  *Data1=HAL_RTCEx_BKUPRead(&RtcHandle, RTC_BKP_DR1);
+  *Data0=HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0);
+  *Data1=HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR1);
 }
 
 TimerTime_t RtcTempCompensation( TimerTime_t period, float temperature )

@@ -86,3 +86,83 @@
 6. ลบส่วนโค้ด Error_Handler() ใน debug.c และ debug.h
 7. ลบส่วนโค้ด SystemClockConfig() HAL_x_MspInit() HAL_xxx_MspDeInit และ handler ของ interrupt ในไฟล์ mlm32l0xx_hw.c mlm32l0xx_hal_msp.c และ mlm32l0xx_it.c
 
+### รุ่น 0.3
+เพิ่มส่วนโค้ดตัวอย่าง EndNode เข้าไปใน main.c แล้วทดสอบการคอมไพล์
+1. ประกาศค่าคงที่ต่างๆ
+```
+#define APP_TX_DUTYCYCLE                            10000
+#define LORAWAN_ADR_STATE                           LORAWAN_ADR_ON
+#define LORAWAN_DEFAULT_DATA_RATE                   DR_0
+#define LORAWAN_APP_PORT                            2
+#define LORAWAN_DEFAULT_CLASS                       CLASS_A
+#define LORAWAN_DEFAULT_CONFIRM_MSG_STATE           LORAWAN_UNCONFIRMED_MSG
+#define LORAWAN_APP_DATA_BUFF_SIZE                  64
+```
+2. ประกาศฟังก์ชันต้นแบบเป็น callback สำหรับ LoRaWAN stack
+```
+static void LORA_RxData( lora_AppData_t *AppData);
+static void LORA_HasJoined( void );
+static void LORA_ConfirmClass ( DeviceClass_t Class );
+static void LORA_TxNeeded ( void );
+static void LoraStartTx(TxEventType_t EventType);
+static void OnTxTimerEvent( void );
+```
+3. ประกาศตัวแปร persistence สำหรับสถานะการทำงาน
+```
+static uint8_t AppDataBuff[LORAWAN_APP_DATA_BUFF_SIZE];
+lora_AppData_t AppData={ AppDataBuff,  0 ,0 };
+static TimerEvent_t TxTimer;
+static LoRaMainCallback_t LoRaMainCallbacks = { HW_GetBatteryLevel,
+                                                HW_GetTemperatureLevel,
+                                                HW_GetUniqueId,
+                                                HW_GetRandomSeed,
+                                                LORA_RxData,
+                                                LORA_HasJoined,
+                                                LORA_ConfirmClass,
+                                                LORA_TxNeeded};
+static LoRaParam_t LoRaParamInit = {LORAWAN_ADR_STATE,
+                                    LORAWAN_DEFAULT_DATA_RATE,  
+                                    LORAWAN_PUBLIC_NETWORK};
+```
+4. เขียนส่วนโค้ดสำหรับก่อน main loop
+```
+DBG_Init();  
+TraceInit();
+Radio.IoInit( );
+LPM_SetOffMode(LPM_APPLI_Id , LPM_Disable );
+
+PRINTF("Start program");
+LORA_Init( &LoRaMainCallbacks, &LoRaParamInit);
+LORA_Join();
+LoraStartTx(TX_ON_TIMER) ;  
+```
+5. เขียนส่วนโค้ดสำหรับภายใน main loop
+```
+LoRaMacProcess( );
+DISABLE_IRQ( );
+#ifndef LOW_POWER_DISABLE
+LPM_EnterLowPower( );
+#endif
+ENABLE_IRQ();
+```
+6. ปรับแก้ส่วนโค้ดของไฟล์ vcom.c โดยการอ้างถึงตัวแปร global ที่จัดการ UART2 ที่ประกาศใน main.c
+```
+extern UART_HandleTypeDef huart2;
+```
+7. ปรับแก้ส่วนโค้ดของไฟล์ main.c ด้วยการย้ายจากไฟล์ hw_rtc.c
+```
+static void MX_RTC_Init(void) {
+  HAL_RTCEx_EnableBypassShadow(&hrtc);
+}
+```
+8. ปรับแก้ส่วนโค้ดของไฟล์ hw_rtc.c โดยการอ้างถึงตัวแปร global ที่จัดการ RTC ที่ประกาศใน main.c
+```
+extern RTC_HandleTypeDef hrtc;
+```
+9. ปรับแก้ส่วนโค้ดของไฟล์ hw_spi.c โดยการอ้างถึงตัวแปร global ที่จัดการ SPI1 ที่ประกาศใน main.c
+```
+extern SPI_HandleTypeDef hspi1;
+```
+10. ปรับแก้ส่วนโค้ดของไฟล์  stm32l0xx_hal_msp.c ด้วยการสำเนาจากไฟล์ mlm32l0xx_hal_msp.c
+11. ปรับแก้ส่วนโค้ดของไฟล์ stm32l0xx_it.c ด้วยการสำเนาจากไฟล์ mlm32l0xx_it.c
+ 
