@@ -42,37 +42,13 @@
 #define __MAIN_H__
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32l0xx_hal.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
-
-#define SX1276_NSS_Pin GPIO_PIN_15
-#define SX1276_NSS_GPIO_Port GPIOA
-#define TCXO_Pin GPIO_PIN_12
-#define TCXO_GPIO_Port GPIOA
-#define DIO0_Pin GPIO_PIN_4
-#define DIO0_GPIO_Port GPIOB
-#define DIO0_EXTI_IRQn EXTI4_15_IRQn
-#define DIO2_Pin GPIO_PIN_13
-#define DIO2_GPIO_Port GPIOC
-#define DIO2_EXTI_IRQn EXTI4_15_IRQn
-#define ANT_TX_BOOST_Pin GPIO_PIN_1
-#define ANT_TX_BOOST_GPIO_Port GPIOC
-#define SX1276_RESET_Pin GPIO_PIN_0
-#define SX1276_RESET_GPIO_Port GPIOC
-#define DIO1_Pin GPIO_PIN_1
-#define DIO1_GPIO_Port GPIOB
-#define DIO1_EXTI_IRQn EXTI0_1_IRQn
-#define ANT_RX_Pin GPIO_PIN_1
-#define ANT_RX_GPIO_Port GPIOA
-#define ANT_TX_Pin GPIO_PIN_2
-#define ANT_TX_GPIO_Port GPIOC
-#define DIO2B0_Pin GPIO_PIN_0
-#define DIO2B0_GPIO_Port GPIOB
-#define DIO2B0_EXTI_IRQn EXTI0_1_IRQn
 
 /* ########################## Assert Selection ############################## */
 /**
