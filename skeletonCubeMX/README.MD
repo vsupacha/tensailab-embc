@@ -163,6 +163,44 @@ extern RTC_HandleTypeDef hrtc;
 ```
 extern SPI_HandleTypeDef hspi1;
 ```
-10. ปรับแก้ส่วนโค้ดของไฟล์  stm32l0xx_hal_msp.c ด้วยการสำเนาจากไฟล์ mlm32l0xx_hal_msp.c
-11. ปรับแก้ส่วนโค้ดของไฟล์ stm32l0xx_it.c ด้วยการสำเนาจากไฟล์ mlm32l0xx_it.c
- 
+
+### รุ่น 0.4
+ปรับโครงสร้างไฟล์ของไลบรารี I-CUBE-LRWAN ให้เข้ากับ Keil project ที่สร้างด้วย CubeMX
+1. ปรับโครงสร้างของไลบรารี 
+  * โฟลเดอร์ Middlewares/LoRaWAN สำหรับโค้ดในส่วนสแตก
+  * โฟลเดอร์ Drivers/BSP สำหรับโค้ดในส่วนฮาร์ดแวร์และ HAL
+2. ลบไฟล์ที่โค้ดซ้ำซ้อน/ไม่จำเป็น
+  * ไฟล์ mlm32l0xx_it.c และ mlm32l0xx_it.h ซึ่งซ้ำซ้อนกับไฟล์ stm32l0xx_it.c/stm32l0xx_it.h
+3. ปรับแก้ส่วนโค้ดที่ซ้ำซ้อน/ขัดแย้งระหว่างไฟล์ที่สร้างด้วย CubeMX และ I-CUBE-LRWAN
+  * ไฟล์ mlm32l0xx_hw.c:
+  
+    | ฟังก์ชัน | การปรับแก้ |
+    |---|---|
+    | `HW_Init()` | ลบ / ย้ายส่วนเรียก `TraceInit()` ไป USER CODE 2 ใน `main()` |
+    | `HW_DeInit()` | ลบ |
+    | `HW_IoInit()` | |
+    | `HW_IoDeInit()` | |
+    
+  * ไฟล์ 
+  , `SystemClock_Config()`, HW_AdcInit(), HW_AdcDeInit, `HAL_MspInit()`
+  * ไฟล์ mlm32l0xx_hal_msp.c
+  * ไฟล์
+  
+ขั้นตอนการใช้งาน custom library
+1. สร้าง CubeMX project โดยเปิดใช้งาน SPI (full-duplex, master, software NSS), RTC (alarm A), GPIO (EXTI สำหรับ DIO และ GPIO output สำหรับ Antenna switch) และ UART (async, DMA สำหรับ Tx) แล้ว generate MDK-ARM v5 project
+  * เลือก generate ไฟล์แยกสำหรับแต่ละ peripheral และยกเลิก static visibility สำหรับกลุ่มฟังก์ชัน `MX_`
+  * กลุ่มที่เกี่ยวข้องกับ SPI: LORA_NSS, LORA_MISO, LORA_MOSI, LORA_SCK
+  * กลุ่มที่เกี่ยวข้องกับ DIO: LORA_DIO0, LORA_DIO1, LORA_DIO2
+  * กลุ่มที่ควบคุมชิพ: LORA_RESET, LORA_TCXO, ANTSW_RX, ANTSW_TX_RFO, ANTSW_TX_BOOST
+  * กลุ่มที่ใช้เป็น Virtial COM: VCOM_RX, VCOM_TX  
+2. เพิ่มไฟล์จาก custom library เข้า project
+  * สำเนาโฟลเดอร์ Middlewares/LoRaWAN และ Drivers/BSP 
+3. ปรับแต่ง project
+  * เพิ่มส่วน Defines เป็น `USE_B_L072Z_LRWAN1, REGION_AS923` โดยตัวเลือกอื่นคือ `DEBUG` และ `LOW_POWER_DISABLE`
+  * เพิ่มโฟลเดอร์ย่อยจาก Middlewares/LoRaWAN และ Drivers/BSP สำหรับ Includes
+4. เพิ่มส่วนโค้ดเพื่อเชื่อมต่อกับ I-CUBE-LRWAN
+  * ไฟล์ 
+  ```
+  
+  ```
+  * ไฟล์  
