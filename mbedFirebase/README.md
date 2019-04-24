@@ -19,8 +19,8 @@
            ".read": true,
            ".write": true,
            "test": {
-               "v01": {
-                   ".indexOn":"ID"  
+               "v1": {
+                   ".indexOn":"timestamp"  
                } 
            }    
        }
@@ -39,32 +39,40 @@
    - เพิ่มไลบรารี [mbed-http](https://os.mbed.com/teams/sandbox/code/http-example/) โดย Import จาก https://os.mbed.com/teams/sandbox/code/mbed-http/
    - เพิ่มไลบรารี [MbedJSONValue](https://os.mbed.com/users/samux/code/MbedJSONValue/docs/tip/classMbedJSONValue.html) โดย Import จาก https://os.mbed.com/users/samux/code/MbedJSONValue/   
 4. เพิ่มไฟล์ mbed_app.json ที่เก็บค่า setting ต่างๆ
-```
-{
-    "macros": [
-        "MBEDTLS_MPI_MAX_SIZE=1024",
-        "MBEDTLS_MPI_WINDOW_SIZE=1",
-        "MBED_HEAP_STATS_ENABLED=1",
-        "MBED_STACK_STATS_ENABLED=1",
-        "MBED_MEM_TRACING_ENABLED=1"
-    ],       
-    "target_overrides": {
-        "*": {
+   ```
+   {
+      "macros": [
+         "MBEDTLS_MPI_MAX_SIZE=1024",
+         "MBEDTLS_MPI_WINDOW_SIZE=1",
+         "MBED_HEAP_STATS_ENABLED=1",
+         "MBED_STACK_STATS_ENABLED=1",
+         "MBED_MEM_TRACING_ENABLED=1"
+      ],
+      "config": {
+         "main-stack-size": {
+            "value": 4096
+         },
+         "thread-stack-size": {
+             "value": 2000
+         }
+      },  
+      "target_overrides": {
+         "*": {
             "platform.stdio-baud-rate"          : 115200,
             "platform.stdio-convert-newlines"   : true,
             "mbed-trace.enable"                 : 1,
             "mbed-http.http-buffer-size"        : 2048,
             "nsapi.default-wifi-security"       : "WPA_WPA2",
-            "nsapi.default-wifi-ssid"           : "\"SSID name\"",
-            "nsapi.default-wifi-password"       : "\"password\""
-        },
-        "DISCO_L475VG_IOT01A": {
+            "nsapi.default-wifi-ssid"           : "\"SSID here\"",
+            "nsapi.default-wifi-password"       : "\"password here\""
+         },
+         "DISCO_L475VG_IOT01A": {
             "target.extra_labels_add"           : ["WIFI_ISM43362"],
             "target.network-default-interface-type" : "WIFI"
-        }        
-    }
-}
-```
+         }        
+      }
+   }
+   ```
 5. เขียนโค้ดเพื่อใช้งาน WiFi เชื่อมต่อ Google Firebase
    - ประกาศ root CA certificate โดย export จาก certificate ของเว็บ Google Firebase
    ```
