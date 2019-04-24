@@ -2,7 +2,7 @@ const functions = require('firebase-functions');    // import Cloud Functions fo
 const admin = require('firebase-admin'); // import Firebase Admin SDK
 admin.initializeApp();
 
-exports.timeStamp = functions.database.ref('/test/v3/{pushId}/name').onCreate((snapshot, context) => {
+exports.timeStamp = functions.database.ref('/test/v1/{pushId}/name').onCreate((snapshot, context) => {
     const name = snapshot.val();
     const key = snapshot.ref.parent.key;
     var now = new Date();
@@ -17,7 +17,7 @@ exports.queryBefore = functions.https.onRequest(async (req, res) => {
     var tprev = new Date().getTime();
     tprev = tprev - (mins*60*1000);
     var listKeys = [];
-    var query = admin.database().ref('/test/v3').orderByChild('timestamp').startAt(tprev);      
+    var query = admin.database().ref('/test/v1').orderByChild('timestamp').startAt(tprev);      
     await query.once('value').then((snapshots) => {
         snapshots.forEach((snapshot) => {
             listKeys.push(snapshot.key);

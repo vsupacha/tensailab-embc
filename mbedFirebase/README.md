@@ -44,7 +44,9 @@
     "macros": [
         "MBEDTLS_MPI_MAX_SIZE=1024",
         "MBEDTLS_MPI_WINDOW_SIZE=1",
-        "MBED_HEAP_STATS_ENABLED=1"
+        "MBED_HEAP_STATS_ENABLED=1",
+        "MBED_STACK_STATS_ENABLED=1",
+        "MBED_MEM_TRACING_ENABLED=1"
     ],       
     "target_overrides": {
         "*": {
@@ -125,7 +127,7 @@
    - ถอดข้อมูลออกจาก JSON ที่ตอบกลับจาก Firebase
    ```
    parse(body, post_req->get_body_as_string().c_str());
-   pushId = body["name"].get<std::string>();
+   std::string pushId = body["name"].get<std::string>();
    delete post_resp;
    ```
    - ล้างตัวแปรจากหน่วยความจำ   
@@ -140,7 +142,43 @@
    get_req->set_header("Content-Type", "application/json");
    HttpResponse* get_resp = get_req->send();   
    ```
-
+7. การเชื่อมต่อแบบ socket reuse จะลดปัญหาเนื่องจากการจองหน่วยความจำได้
+   ```
+   TLSSocket* socket = new TLSSocket();
+   if ((net_status = socket->open(net)) != NSAPI_ERROR_OK) {
+      printf("TLS socket open failed (%d)\n", net_status);
+      return 1;
+   }
+   if ((net_status = socket->set_root_ca_cert(SSL_CA_PEM)) != NSAPI_ERROR_OK) {
+      printf("TLS socket set_root_ca_cert failed (%d)\n", net_status);
+      return 1;
+   }
+   const char SERVER_URL[] = "mbed-test-c7e17.firebaseio.com"; 
+   if ((net_status = socket->connect(SERVER_URL, 443)) != NSAPI_ERROR_OK) {
+      printf("TLS socket connect failed (%d)\n", net_status);
+      return 1;
+   }
+   while(1) {
+      const char DBASE_URL[] = "https://mbed-test-c7e17.firebaseio.com/test/v2.json"; 
+      post_req = new HttpsRequest(socket, HTTP_POST, DBASE_URL);
+      post_req->set_header("Content-Type", "application/json");
+      body["name"] = "Supachai";
+      body["value"] = 20;
+      std::string s = body.serialize();
+      post_resp = post_req->send(s.c_str(), s.length());
+      if (post_resp) {
+         parse(body, post_resp->get_body_as_string().c_str());
+         std::string pushId = body["name"].get<std::string>();
+         printf("Push ID: %s\n", pushId.c_str());
+      } else {
+         printf("No response from Firebase\n");
+         print_memory_info();
+      }
+      delete post_req;
+      wait(10);
+   }
+   ```   
+   
 ## Cloud functions
 1. ติดตั้งซอฟต์แวร์สำหรับ cloud functions
    - ซอฟต์แวร์ [node.js รุ่น 8](https://nodejs.org/dist/latest-v8.x/) 
@@ -203,22 +241,12 @@
 
     mbed_trace_init();   
    ```   
-2. การรายงานสถานะหน่วยความจำ
+2. การรายงานสถานะหน่วยความจำ โดยเพิ่มไลบรารีจาก https://github.com/nuket/mbed-memory-status
    ```
-   void print_memory_info() {
-      // allocate enough room for every thread's stack statistics
-      int cnt = osThreadGetCount();
-      mbed_stats_stack_t *stats = (mbed_stats_stack_t*) malloc(cnt * sizeof(mbed_stats_stack_t));
-      cnt = mbed_stats_stack_get_each(stats, cnt);
-      for (int i = 0; i < cnt; i++) {
-         printf("Thread: 0x%lX, Stack size: %lu / %lu\r\n", stats[i].thread_id, stats[i].max_size, stats[i].reserved_size);
-      }
-      free(stats);
-      // Grab the heap statistics
-      mbed_stats_heap_t heap_stats;
-      mbed_stats_heap_get(&heap_stats);
-      printf("Heap size: %lu / %lu bytes\r\n", heap_stats.current_size, heap_stats.reserved_size);
-   }
+   #include "mbed_memory_status.h"
+   
+   print_all_thread_info();
+   print_heap_and_isr_stack_info();
    ```   
 3. การทดสอบ Firebase ภายในเครื่อง  
    - ติดตั้ง emulator สำหรับ Realtime Database โดยพิมพ์คำสั่ง ```firebase setup:emulators:database```
@@ -229,21 +257,21 @@
 1. ไลบรารี mbed-http ไม่รองรับ method PUT และ PATCH จึงไม่สามารถอัพเดทฐานข้อมูลแบบระบุ absolute path ได้
 2. การเพิ่มข้อมูลลงใน collection โดยใช้การ push() จะมีการสร้าง unique ID ที่เรียงตามเวลาโดยอัตโนมัติ ซึ่ง ID จะมีส่วนของ random bit ทำให้ guess ไม่ได้
 3. ฐานข้อมูล Cloud Firestore จะมีรูปแบบของ request ที่ซับซ้อนกว่า Realtime Database (จัดเก็บแบบ JSON tree) เนื่องจากจัดเก็บแบบ document ที่สามารถประกาศเป็นลำดับชั้น collection ภายใน document ได้   นอกจากนี้ การส่งข้อมูลจะต้องประกาศ type ของข้อมูลด้วย
-```
-{
-  "fields": {
-    "firstName": {
-      "stringValue": "Jason"
-    },
-    "lastName": {
-      "stringValue": "Byrne"
-    }, 
-    "age": { 
-      "integerValue": 36
-    }
-  }
-}
-```
+   ```
+   {
+      "fields": {
+         "firstName": {
+            "stringValue": "Jason"
+         },
+         "lastName": {
+            "stringValue": "Byrne"
+         }, 
+         "age": { 
+            "integerValue": 36
+         }
+      }
+   }
+   ```
 
 
 ## Reference
